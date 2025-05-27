@@ -15,11 +15,11 @@ if uploaded_file is not None:
     st.write("列名（strip後）:", df.columns.tolist())
 
     # 必要な列があるか確認
-    if "加算か" in df.columns and "実際のバス代金" in df.columns:
-        df["加算か"] = df["加算か"].fillna("×")
+    if "加算するか" in df.columns and "実際のバス代金" in df.columns:
+        df["加算するか"] = df["加算するか"].fillna("×")
         df["実際のバス代金"] = pd.to_numeric(df["実際のバス代金"], errors="coerce").fillna(0)
 
-        df_filtered = df[df["加算か"] == "○"]
+        df_filtered = df[df["加算するか"] == "○"]
         total_fare = df_filtered["実際のバス代金"].sum()
 
         st.write("🚍 加算対象の合計バス代金：", int(total_fare), "円")
