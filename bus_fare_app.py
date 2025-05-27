@@ -1,3 +1,5 @@
+st.write("列名リスト（デバッグ用）:", df.columns.tolist())
+
 import streamlit as st
 import pandas as pd
 
