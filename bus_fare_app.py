@@ -1,33 +1,28 @@
-st.write("列名リスト（デバッグ用）:", df.columns.tolist())
-
 import streamlit as st
 import pandas as pd
 
 st.title("バス代集計アプリ")
 
-# CSVファイルアップロード
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください", type="csv")
 
 if uploaded_file is not None:
-    # CSV読み込み
     df = pd.read_csv(uploaded_file)
 
-    # 列名表示（デバッグ用・必要なら表示）
-    st.write("列名：", df.columns.tolist())
+    # 列名の前後の空白を除去
+    df.columns = df.columns.str.strip()
 
-    # 欠損値処理
-    df["加算か"] = df["加算か"].fillna("×")
-    df["実際のバス代金"] = df["実際のバス代金"].fillna(0)
+    # 列名を表示（デバッグ）
+    st.write("列名（strip後）:", df.columns.tolist())
 
-    # 数値に変換
-    df["実際のバス代金"] = pd.to_numeric(df["実際のバス代金"], errors="coerce").fillna(0)
+    # 必要な列があるか確認
+    if "加算か" in df.columns and "実際のバス代金" in df.columns:
+        df["加算か"] = df["加算か"].fillna("×")
+        df["実際のバス代金"] = pd.to_numeric(df["実際のバス代金"], errors="coerce").fillna(0)
 
-    # 加算対象の抽出
-    df_filtered = df[df["加算か"] == "○"]
+        df_filtered = df[df["加算か"] == "○"]
+        total_fare = df_filtered["実際のバス代金"].sum()
 
-    # 合計金額の計算
-    total_fare = df_filtered["実際のバス代金"].sum()
-
-    # 表示
-    st.write("🚍 加算対象の合計バス代金：", int(total_fare), "円")
-    st.dataframe(df_filtered)
+        st.write("🚍 加算対象の合計バス代金：", int(total_fare), "円")
+        st.dataframe(df_filtered)
+    else:
+        st.error("❌ 列名『加算か』『実際のバス代金』が見つかりません。CSVのヘッダーを確認してください。")
