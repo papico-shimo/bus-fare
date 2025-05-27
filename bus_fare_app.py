@@ -11,7 +11,7 @@ if uploaded_file is not None:
     st.subheader("アップロードされたデータ")
     st.dataframe(df)
 
-    df["加算か"] = df["加算か"].fillna("×")
+    df["加算するか"] = df["加算するか"].fillna("×")
     df["迎えか"] = df["迎えか"].fillna("×")
     df["遊びか"] = df["遊びか"].fillna("×")
     df["実際のバス代金"] = pd.to_numeric(df["実際のバス代金"], errors="coerce").fillna(0)
