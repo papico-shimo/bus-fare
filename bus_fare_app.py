@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 
@@ -13,6 +12,8 @@ uploaded_file = st.file_uploader("CSVファイルをアップロードしてく�
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
+    df.columns = df.columns.str.strip()
+    st.write("列名リスト：", df.columns.tolist())
     st.subheader("アップロードされたデータ")
     st.dataframe(df)
 
