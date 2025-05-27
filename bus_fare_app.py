@@ -1,27 +1,31 @@
 import streamlit as st
 import pandas as pd
 
-st.title("🚌 バス代集計アプリ")
+st.title("バス代集計アプリ")
 
+# CSVファイルアップロード
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください", type="csv")
 
 if uploaded_file is not None:
+    # CSV読み込み
     df = pd.read_csv(uploaded_file)
-    df.columns = df.columns.str.strip()
 
-    st.subheader("📄 アップロードされたデータ")
-    st.dataframe(df)
+    # 列名表示（デバッグ用・必要なら表示）
+    st.write("列名：", df.columns.tolist())
 
-    # 集計処理
-    total_actual_fare = df["実際のバス代金"].sum()
-    count_plus = df["加算(+/-)"].fillna("").str.contains(r"\+").sum()
-    total_plus_290 = 290 * count_plus
-    mask_not_pickup_or_play = df["迎え"].isna() & df["遊び"].isna()
-    actual_without_extras = df[mask_not_pickup_or_play]["実際のバス代金"].sum()
-    play_fare = df[df["遊び"].notna()]["実際のバス代金"].sum()
+    # 欠損値処理
+    df["加算か"] = df["加算か"].fillna("×")
+    df["実際のバス代金"] = df["実際のバス代金"].fillna(0)
 
-    st.subheader("📊 集計結果")
-    st.markdown(f"- **合計（実際のバス代金）**：{total_actual_fare:.0f}円")
-    st.markdown(f"- **290円 × 加算数**：{total_plus_290:.0f}円")
-    st.markdown(f"- **迎え・遊び以外のバス代金**：{actual_without_extras:.0f}円")
-    st.markdown(f"- **遊びのバス代金**：{play_fare:.0f}円")
+    # 数値に変換
+    df["実際のバス代金"] = pd.to_numeric(df["実際のバス代金"], errors="coerce").fillna(0)
+
+    # 加算対象の抽出
+    df_filtered = df[df["加算か"] == "○"]
+
+    # 合計金額の計算
+    total_fare = df_filtered["実際のバス代金"].sum()
+
+    # 表示
+    st.write("🚍 加算対象の合計バス代金：", int(total_fare), "円")
+    st.dataframe(df_filtered)
