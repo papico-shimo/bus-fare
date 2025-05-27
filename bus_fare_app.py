@@ -2,6 +2,11 @@
 import streamlit as st
 import pandas as pd
 
+df = pd.read_csv("bus_data.csv")
+df.columns = df.columns.str.strip()
+
+st.write("列名一覧:", df.columns.tolist())
+
 st.title("バス代自動集計アプリ")
 
 uploaded_file = st.file_uploader("CSVファイルをアップロードしてください", type=["csv"])
